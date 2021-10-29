@@ -1,8 +1,8 @@
 /**
   *  Author: dhruv_gheewala
   *  Problem: Equal Beauty
-  *  Date:   23.10.2021
-  *  Time:   13:15:55
+  *  Date:   25.10.2021
+  *  Time:   22:29:02
 **/
 
 #include "bits/stdc++.h"
@@ -69,87 +69,49 @@ int32_t main(int32_t argc, char **argv) {
     exit(0);
 }
 
-void optimal(int n, vector<int> &a) {
-	sort(a.begin(), a.end());
-
-    int ans = inf;
-    for(int i = 1; i < n; i++) {
-    	int left_diff = a[i - 1] - a[0];
-    	int right_diff = a[n - 1] - a[i];
-    	ans = min(ans, abs(right_diff - left_diff));
-
-    	if(right_diff == left_diff) {
-    		cout << 0 << endl;
-    		return;
-    	}
-
-    	if(left_diff < right_diff) {
-    		// we have to increase the max of left part
-    		// or increase the min of right part <== this is not possible
-
-    		// right_diff <= (a[ind] - a[0])
-    		// a[ind] >= right_diff + a[0]
-    		// but, ind: [i + 1, n - 2]
-
-    		int ind = upper_bound(a.begin() + i + 1, a.begin() + n - 1, right_diff + a[0]) - a.begin();
-    		for(int rep = 0; rep < 3; rep++) {
-	    		if(in_range(ind - rep, i + 1, n - 2))
-	    			ans = min(ans, abs(right_diff - (a[ind - rep] - a[0])));
-    		}
-    	} else {
-    		// we have to decrease the max of left part <== this is not possible
-    		// or decrease the min of right part
-
-    		// a[n - 1] - a[ind] <= left_diff
-    		// a[ind] >= a[n - 1] - left_diff
-    		// but, ind: [1, i - 0]
-
-    		int ind = upper_bound(a.begin() + 1, a.begin() + i, a[n - 1] - left_diff) - a.begin();
-    		for(int rep = 0; rep < 3; rep++) {
-	    		if(in_range(ind - rep, 1, i - 2))
-	    			ans = min(ans, abs((a[n - 1] - a[ind - rep]) - left_diff));
-    		}
-    	}
-    }
-    cout << ans << endl;
-}
-
-void brute_force(int n, vector<int> &a) {
-	debug(a);
-	int m = (1 << n) - 1, ans = inf, minL, maxL, minR, maxR;
-	for(int i = 1; i < m; i++) {
-		int x = i, one_part = 0;
-
-		minL = minR = inf;
-		maxL = maxR = -inf;
-		for(int j = 0; j < n; j++) {
-			if(x & 1) {
-				// include in subset
-				minL = min(minL, a[j]);
-				maxL = max(maxL, a[j]);
-			} else {
-				// don't include in subset
-				minR = min(minR, a[j]);
-				maxR = max(maxR, a[j]);
-			}
-			x >>= 1;
-		}
-		ans = min(ans, abs((maxR - minR) - (maxL - minL)));
-
-		debug(i);
-		debug(minL, maxL);
-		debug(minR, maxR);
-	}
-	cout << ans << endl << endl;
-}
-
 void solve(int tc) {
     int n;
     cin >> n;
 
     vector<int> a(n);
     cin >> a;
+    sort(a.begin(), a.end());
 
-    optimal(n, a);
-    // brute_force(n, a);
+    const auto &cost = [&](int elem1, int elem2) {
+    	int result = abs((elem1 - a[0]) - (a.back() - elem2));
+    	result = min(result, abs((elem2 - a[0]) - (a.back() - elem1)));
+    	return result;
+    };
+
+    // Now we have to select 2 elems such that
+    // abs((elem1 - a[0]) - abs(a[n - 1] - elem2)) is minimized
+
+    // here elem1 = a[i]
+    // we will search for elem2
+    //
+    // here, elem1 can't be a[n - 1]
+    // and elem2 can't be a[0]
+
+    int ans = inf; // 0
+    for(int i = 0; i < n - 1; i++) {
+    	// elem2 = a[i + 1]
+    	ans = min(ans, cost(a[i], a[i + 1]));
+
+    	// Find elem2 in: [1, i - 1]
+    	int l = 1, r = i - 1, mid;
+		int left_part = a[i] - a[0];
+
+    	while(l <= r) {
+    		mid = (l + r) / 2;
+    		int right_part = a[n - 1] - a[mid];
+    		ans = min(ans, abs(right_part - left_part));
+
+    		if(left_part < right_part) {
+    			l = mid + 1; // right_part will decrease
+    		} else {
+    			r = mid - 1; // right_part will increase
+    		}
+    	}
+    }
+    cout << ans << endl;
 }

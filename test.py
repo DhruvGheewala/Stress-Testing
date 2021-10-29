@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import zipfile
+from beepy import beep
 from colorama import Fore
 
 from color_print import ColorPrint
@@ -125,6 +126,7 @@ for T in range(1, testcase_threshold + 1):
 						file.write(output)
 
 			if required_test == 0:
+				beep('ready')
 				create_folder_zip(testcase_root)
 				print(f'Generated testcase in {testcase_root}')
 				sys.exit(0)
@@ -133,3 +135,7 @@ for T in range(1, testcase_threshold + 1):
 		create_folder_zip(testcase_root)
 		print('\n\nERROR: Operation cancelled by user', color = color['red'])
 		sys.exit(1)
+
+
+beep('robot_error') # some/all testcases missed!
+create_folder_zip(testcase_root)

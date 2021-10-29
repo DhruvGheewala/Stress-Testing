@@ -6,10 +6,11 @@ using namespace std;
 #define int int64_t
 
 void testcase(int tc) {
-    int n = rnd(5, 20);
+    int n = rnd(2, 20);
     vector<int> a;
-    if(tc & 1) a = generateVector(n, -2 * n, 2 * n);
-    else a = generateUniqueVector(n, -2 * n, 2 * n);
+
+    if(tc & 1) a = generateVector(n, -1000, 1000);
+    else a = generateUniqueVector(n, -1000, 1000);
 
     cout << n << endl;
     for(int x: a)
