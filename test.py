@@ -5,25 +5,27 @@ import zipfile
 from beepy import beep
 from colorama import Fore
 
+from file_config import file_config
 from color_print import ColorPrint
 from compile_run import Compiler, Runner
 
 # *Create/update this file
 # maybe bruteforce code
-correct_code = './src/correct.cpp'
+# correct_code = './src/correct.cpp'
+correct_code = file_config.get('correct_code')
 
 # *Create/update this file
 # maybe optimal code missing some corner tests
-incorrect_codes = ['./src/incorrect.cpp', './src/incorrect.cpp']
+incorrect_codes = file_config.get('incorrect_codes')
 incorrect_codes = list(set(incorrect_codes))
 
 # *Create/update this file
-testcase_generator = './generator/testcase.cpp'
-testcase_generator_linker = './generator/headers/generator_implementation.cpp'
+testcase_generator = file_config.get('testcase_generator')
+testcase_generator_linker = file_config.get('testcase_generator_linker')
 
 # *All the corner cases where code gets different answer
 # *from correct answer will be stored in this folder
-testcase_root = './testcases'
+testcase_root = file_config.get('testcase_root')
 
 shutil.rmtree(testcase_root)
 os.mkdir(testcase_root)
